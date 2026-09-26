@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Analyzer</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #1e293b;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: #ffffff;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7%;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #4f46e5;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #475569;
+      font-size: 15px;
+    }
+
+    .nav-links a:hover {
+      color: #4f46e5;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 35px;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 15px;
+      color: #111827;
+    }
+
+    .hero h1 span {
+      color: #4f46e5;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: auto;
+      color: #64748b;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* Main container */
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: 20px auto 60px;
+    }
+
+    /* Upload Card */
+    .upload-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 35px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+      text-align: center;
+      border: 1px solid #e5e7eb;
+    }
+
+    .upload-box {
+      border: 2px dashed #a5b4fc;
+      background: #f8faff;
+      border-radius: 15px;
+      padding: 45px 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .upload-box:hover {
+      border-color: #4f46e5;
+      background: #eef2ff;
+    }
+
+    .upload-icon {
+      font-size: 50px;
+      margin-bottom: 15px;
+    }
+
+    .upload-box h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .upload-box p {
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      background: #4f46e5;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .upload-btn:hover {
+      background: #3730a3;
+    }
+
+    #resumeFile {
+      display: none;
+    }
+
+    #fileName {
+      margin-top: 15px;
+      color: #4f46e5;
+      font-weight: bold;
+    }
+
+    /* Analyze button */
+    .analyze-btn {
+      margin-top: 25px;
+      padding: 14px 35px;
+      border: none;
+      border-radius: 9px;
+      background: #111827;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .analyze-btn:hover {
+      background: #334155;
+    }
+
+    /* Results */
+    .results {
+      margin-top: 40px;
+    }
+
+    .section-title {
+      font-size: 25px;
+      margin-bottom: 20px;
+      color: #111827;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+      border: 1px solid #e5e7eb;
+    }
+
+    .stat-card h4 {
+      color: #64748b;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    .score {
+      font-size: 42px;
+      font-weight: bold;
+      color: #4f46e5;
+    }
+
+    .score.green {
+      color: #16a34a;
+    }
+
+    .score.orange {
+      color: #ea580c;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      margin-top: 15px;
+      background: #e2e8f0;
+      height: 9px;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background: #4f46e5;
+      border-radius: 20px;
+    }
+
+    /* Analysis grid */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-top: 25px;
+    }
+
+    .analysis-card {
+      background: white;
+      padding: 28px;
+      border-radius: 15px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.05);
+    }
+
+    .analysis-card h3 {
+      margin-bottom: 20px;
+      color: #111827;
+    }
+
+    /* Skills */
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .skill {
+      padding: 8px 13px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .skill.green {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .skill.red {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .skill.yellow {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    /* Suggestions */
+    .suggestions {
+      list-style: none;
+    }
+
+    .suggestions li {
+      padding: 13px 0;
+      border-bottom: 1px solid #e5e7eb;
+      line-height: 1.5;
+      color: #475569;
+    }
+
+    .suggestions li:last-child {
+      border-bottom: none;
+    }
+
+    .suggestions li::before {
+      content: "✓";
+      color: #16a34a;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    /* Keywords */
+    .keyword-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .keyword {
+      background: #f1f5f9;
+      padding: 10px 12px;
+      border-radius: 7px;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 25px;
+      background: #111827;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .upload-card {
+        padding: 20px;
+      }
+
+      .upload-box {
+        padding: 30px 15px;
+      }
+
+      .keyword-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">ResumeAI</div>
+
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#analyzer">Analyzer</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </nav>
+
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Smart <span>Resume Analyzer</span></h1>
+    <p>
+      Upload your resume and analyze its ATS score, skills,
+      keywords and potential improvements to make your resume
+      more job-ready.
+    </p>
+  </section>
+
+
+  <main class="container">
+
+    <!-- Upload Section -->
+    <section class="upload-card" id="analyzer">
+
+      <div class="upload-box" onclick="document.getElementById('resumeFile').click()">
+
+        <div class="upload-icon">📄</div>
+
+        <h3>Upload Your Resume</h3>
+
+        <p>Drag & drop your resume here or select a file</p>
+
+        <label class="upload-btn" for="resumeFile">
+          Choose Resume
+        </label>
+
+        <input
+          type="file"
+          id="resumeFile"
+          accept=".pdf,.doc,.docx"
+        >
+
+        <div id="fileName"></div>
+
+      </div>
+
+      <button class="analyze-btn" onclick="analyzeResume()">
+        Analyze Resume
+      </button>
+
+    </section>
+
+
+    <!-- Results -->
+    <section class="results" id="results">
+
+      <h2 class="section-title">Resume Analysis</h2>
+
+      <!-- Score Cards -->
+      <div class="dashboard">
+
+        <div class="stat-card">
+          <h4>ATS Score</h4>
+          <div class="score">82%</div>
+
+          <div class="progress-container">
+            <div class="progress" style="width:82%"></div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <h4>Keyword Match</h4>
+          <div class="score green">76%</div>
+
+          <div class="progress-container">
+            <div
+              class="progress"
+              style="width:76%; background:#16a34a;">
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <h4>Resume Quality</h4>
+          <div class="score orange">8.2/10</div>
+
+          <div class="progress-container">
+            <div
+              class="progress"
+              style="width:82%; background:#ea580c;">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- Analysis Cards -->
+      <div class="analysis-grid">
+
+        <!-- Skills -->
+        <div class="analysis-card">
+
+          <h3>Detected Skills</h3>
+
+          <div class="skills">
+            <span class="skill green">HTML</span>
+            <span class="skill green">CSS</span>
+            <span class="skill green">JavaScript</span>
+            <span class="skill green">React</span>
+            <span class="skill green">Git</span>
+            <span class="skill yellow">Node.js</span>
+            <span class="skill yellow">SQL</span>
+          </div>
+
+        </div>
+
+
+        <!-- Missing Skills -->
+        <div class="analysis-card">
+
+          <h3>Potential Skills to Add</h3>
+
+          <div class="skills">
+            <span class="skill red">TypeScript</span>
+            <span class="skill red">AWS</span>
+            <span class="skill red">Docker</span>
+            <span class="skill yellow">REST API</span>
+          </div>
+
+        </div>
+
+
+        <!-- Keywords -->
+        <div class="analysis-card">
+
+          <h3>Important Keywords</h3>
+
+          <div class="keyword-list">
+
+            <div class="keyword">Frontend Development</div>
+            <div class="keyword">Responsive Design</div>
+            <div class="keyword">UI/UX</div>
+            <div class="keyword">JavaScript</div>
+            <div class="keyword">React</div>
+            <div class="keyword">Web Development</div>
+
+          </div>
+
+        </div>
+
+
+        <!-- Suggestions -->
+        <div class="analysis-card">
+
+          <h3>Improvement Suggestions</h3>
+
+          <ul class="suggestions">
+
+            <li>
+              Add measurable achievements to your work experience.
+            </li>
+
+            <li>
+              Include more keywords related to the target job.
+            </li>
+
+            <li>
+              Use stronger action verbs such as "Developed",
+              "Implemented" and "Optimized".
+            </li>
+
+            <li>
+              Keep the resume concise and easy to scan.
+            </li>
+
+            <li>
+              Add relevant technical certifications if available.
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- Footer -->
+  <footer>
+    © 2026 ResumeAI — Resume Analyzer Template
+  </footer>
+
+
+  <script>
+    const fileInput = document.getElementById("resumeFile");
+    const fileName = document.getElementById("fileName");
+
+    fileInput.addEventListener("change", function () {
+
+      if (this.files.length > 0) {
+        fileName.textContent =
+          "Selected: " + this.files[0].name;
+      } else {
+        fileName.textContent = "";
+      }
+
+    });
+
+
+    function analyzeResume() {
+
+      if (fileInput.files.length === 0) {
+        alert("Please upload your resume first.");
+        return;
+      }
+
+      alert(
+        "Resume uploaded successfully!\\n\\n" +
+        "This template currently displays sample analysis results. " +
+        "Connect it to a backend/AI API to perform real resume analysis."
+      );
+
+      document.getElementById("results").scrollIntoView({
+        behavior: "smooth"
+      });
+    }
+  </script>
+
+</body>
+</html>
